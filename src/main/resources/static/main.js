@@ -1,29 +1,31 @@
-let billettArray = [];
-let i=0;
 
 function kjop() {
     //Inputfeltene
     const filmer = document.getElementById("filmer") // Gir et array av tilgjengelige filmer
     const filmInn = filmer.options[filmer.selectedIndex].value; //Henter valgt film
-    const antallInn = document.getElementById("antall").value;
-    const fornavnInn = document.getElementById("fornavn").value;
-    const etternavnInn = document.getElementById("etternavn").value;
-    const nrInn = document.getElementById("nr").value;
-    const epostInn = document.getElementById("e-post").value;
+    const antallInn = $("#antall").val();
+    const fornavnInn = $("#fornavn").val();
+    const etternavnInn = $("#etternavn").val();
+    const nrInn = $("#nr").val();
+    const epostInn = $("#e-post").val();
+
+
 
     const inputVerdier = document.querySelectorAll("input");
 
     // Resetter hver inputfelt sin "output"-melding
     for (let verdi of inputVerdier) {
-        document.getElementById(verdi.id + "-1").innerHTML = "";
+        $("#"+verdi.id + "-1").html("")
     }
-    document.getElementById("filmer-1").innerHTML = "";
+    $('#filmer-1').html("")
+
+
 
     let feltFylt = true;
 
     // Sjekker om inputfeltene + dropdown er tomme, og om de er gyldige
     for (let verdi of inputVerdier) {
-        let utFelt = document.getElementById(verdi.id + "-1") //Output "error" felt
+        let utFelt = $("#"+verdi.id + "-1") //Output "error" felt
         let ut = ""
         // Sjekker om antallet er mindre eller lik null
         if ((verdi.id == "antall" && verdi.value <= 0) ||
@@ -38,42 +40,46 @@ function kjop() {
             ut = "<span> Må skrive noe i " + verdi.id + "</span>";
             feltFylt = false;
         }
-        utFelt.innerHTML = ut; //Skriver error-melding ut om hva som må fikses
+        utFelt.html(ut) //Skriver error-melding ut om hva som må fikses
     }
-
     // Siden dropdown-listen for filmer er av en annen datatype enn de andre inputfeltene,
     // så skjer inputvalidering separert fra resten
     if (filmer.selectedIndex == 0) { // Sjekker om bruker har beholdt dropdown listen på standardalternativ
-        document.getElementById("filmer-1").innerHTML = "<span>Må velge én film</span>";
+        $("#filmer-1").html("<span>Må velge én film</span>");
         feltFylt = false;
     }
 
+
+
     // Kjøres hvis inputverdiene har bestått validering
     if (feltFylt) {
-        // Verdiene samles inn i ett objekt og legges i et array
-        billettArray[i] = {
+        // Inputverdiene samles inn i et objekt
+        let billettInn = {
             film : filmInn,
             antall : antallInn,
-            navn : fornavnInn,
+            fornavn : fornavnInn,
             etternavn : etternavnInn,
             tlf : nrInn,
             epost : epostInn
         }
-        let ut = "";
-        // Hvis det er aller første billett, legges til tabelltittel på toppen
-        if (i == 0) {
-            ut = "<div><div>Film</div><div>Antall</div><div>Fornavn</div><div>Etternavn</div><div>Telefon</div><div>E-post</div></div>"
-        }
-        ut+= "<div><div>" + filmInn + "</div>"
-            + "<div>" + antallInn + "</div>"
-            + "<div>" + fornavnInn + "</div>"
-            + "<div>" + etternavnInn + "</div>"
-            + "<div>" + nrInn + "</div>"
-            + "<div>" + epostInn + "</div>"
-            + "</div>";
-        document.getElementById("billetter").insertAdjacentHTML("beforeend", ut);
-        i++;
+        // Objektet lagres på array i server
+        $.post('/setBillett', billettInn, function(data) { })
 
+        // Billett-arrayet hentes fra server
+        $.get('/hentAlleBilletter', function(data) {
+            let ut = "<tr><th>Film</th><th>Antall</th><th>Fornavn</th><th>Etternavn</th><th>Telefon</th><th>E-post</th></tr>"
+            // Skrives ut i tabell
+            for (let billett of data) {
+                ut+= "<tr><td>" + billett.film + "</td>"
+                    + "<td>" + billett.antall + "</td>"
+                    + "<td>" + billett.fornavn + "</td>"
+                    + "<td>" + billett.etternavn + "</td>"
+                    + "<td>" + billett.tlf + "</td>"
+                    + "<td>" + billett.epost + "</td>"
+                    + "</tr>";
+            }
+            $("#billetter").html(ut)
+        })
         // Tømmer inputfeltene
         for (let verdi of inputVerdier) {
             verdi.value = "";
@@ -81,10 +87,10 @@ function kjop() {
         filmer.selectedIndex = 0; // Setter dropdown til standardverdi "Velg film"
     }
 }
+
 // Funksjon som tømmer arrayet og billettlisten
 function slett() {
-    document.getElementById("billetter").innerHTML = "";
-    billettArray = []; // Resetter arrayet til et tomt et
-    // Resetter i slik at objekter kan fremdeles legges inn i arrayet uten å laste inn siden på nytt
-    i = 0;
+    $("#billetter").html("");
+    // Viser til end-point som tømmer arrayet
+    $.get("/slettAlleBilletter", function(data) { })
 }
