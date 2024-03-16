@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kinobilletter</title>
+    <script src="main.js"></script>
+    <!--Intern CSS-->
+    <style>
+        label {
+            display: block; /* Labelene settes under hverandre */
+        }
+        label > span { /* Gir outputfeltene rød tekst */
+            color: red;
+        }
+
+        #antall {
+            width: 30px;
+        }
+
+        #billetter > div {
+            width: 85vw;
+            gap: 10px;
+            margin: 0 auto;
+            display: flex;
+            flex-flow: row;
+            text-align: left;
+        }
+
+        #billetter > div > div {
+            width: 16%;
+        }
+
+        #billetter > div:first-of-type {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Bestilling av kinobilletter</h1>
+
+<!--Form element som kjører funksjonen kjop() når dataen blir sendt inn-->
+<form action="javascript:kjop()">
+
+    <label for="filmer">Velg film
+        <!--Drop-down liste for å velge filmer-->
+        <select id="filmer">
+            <option value="" name="film">Velg film her</option>
+            <option name="film">Oppenheimer</option>
+            <option name="film">Barbie</option>
+            <option name="film">The Conjuring</option>
+            <option name="film">The Great Gatsby</option>
+        </select>
+        <!--Outputmeldinger for inputfeltet-->
+        <span id="filmer-1"></span>
+    </label>
+
+    <label>Antall <input id="antall" type="number" min="0" /><span id="antall-1"></span></label>
+
+    <label>Fornavn <input id="fornavn" type="text" /><span id="fornavn-1"></span></label>
+
+    <label>Etternavn <input id="etternavn" type="text" /><span id="etternavn-1"></span></label>
+    <!--Begrenser lengden til 8 sifre-->
+    <label>Telefonnr <input id="nr" type="text" min="8" max="8" /><span id="nr-1"></span></label>
+
+    <label>Epost <input id="e-post" type="email" /><span id="e-post-1"></span></label>
+    <!--type="submit= lenker tilbake til action attributten til <form> elementet-->
+    <button type="submit">Kjøp billett</button>
+</form>
+
+<h2>Alle billetter</h2>
+<!--Billettene vises her-->
+<div id="billetter"></div>
+
+<button onclick="slett()">Slett alle billettene</button>
+</body>
+</html>
